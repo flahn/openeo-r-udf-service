@@ -1,6 +1,6 @@
-FROM r-base:3.5.0
+FROM openeor/r-tidy-geospatial
 LABEL maintainer="Florian Lahn (florian.lahn@uni-muenster.de)"
-LABEL version="0.0.1"
+LABEL version="0.0.4-1"
 LABEL description="openeo R UDF webservice implementation"
 LABEL author1="Florian Lahn (florian.lahn@uni-muenster.de)" \
       author2="Pramit Ghosh (pramitghosh@uni-muenster.de)"
@@ -8,25 +8,17 @@ LABEL author1="Florian Lahn (florian.lahn@uni-muenster.de)" \
 # create the path for the user files
 RUN mkdir -p /opt/dockerfiles/
 
-COPY ./ /opt/dockerfiles/
+COPY ./docker/server_start.R /opt/dockerfiles/server_start.R
 
-# run commands to prepare the image
-# install dependencies
-# RUN apt-get -y update && apt-get -y install libgdal-dev libcurl4-gnutls-dev libssl-dev libssh2-1-dev libsodium-dev gdal-bin libudunits2-dev
-RUN apt-get update -qq && apt-get install -y \
-  libxml2-dev \
-  libssl-dev \
-  libcurl4-gnutls-dev \
-  libudunits2-dev \
-  libgdal-dev \
-  gdal-bin
-
-# libxml2-dev libssl-dev libcurl4-gnutls-dev to get plumber running
-# libunits2-dev for stars and sf (gdal is required for sf)
-
-# install R dependencies and install package
-RUN R --no-save -f /opt/dockerfiles/docker/install_package_with_dependencies.R
-
+RUN apt-get update -qq && apt-get -y --no-install-recommends install \ 
+	libsodium-dev \
+	gdal-bin \
+&& install2.r --error \ 
+	--deps TRUE \
+	plumber \
+	sodium \
+	&& R -e "devtools::install_github('pramitghosh/OpenEO.R.UDF')"
+#install master version from pramits repo until another fixed version after 0.0.4 is available
 
 
 # cmd or entrypoint for startup
