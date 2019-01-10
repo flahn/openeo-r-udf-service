@@ -9,19 +9,19 @@ LABEL author1="Florian Lahn (florian.lahn@uni-muenster.de)" \
 RUN mkdir -p /opt/dockerfiles/
 
 COPY ./docker/server_start.R /opt/dockerfiles/server_start.R
+COPY ./R/RESTful_services.R /opt/dockerfiles/RESTful_services.R
 
 RUN apt-get update -qq && apt-get -y --no-install-recommends install \ 
-	libsodium-dev \
 	gdal-bin \
 && install2.r --error \ 
 	--deps TRUE \
 	plumber \
-	sodium \
+	zip \
 	&& R -e "devtools::install_github('pramitghosh/OpenEO.R.UDF')"
 #install master version from pramits repo until another fixed version after 0.0.4 is available
 
 
 # cmd or entrypoint for startup
-ENTRYPOINT ["R", "-q", "--no-save", "-f /opt/dockerfiles/docker/server_start.R"]
+ENTRYPOINT ["R", "-q", "--no-save", "-f /opt/dockerfiles/server_start.R"]
 
 EXPOSE 8010

@@ -4,7 +4,7 @@ services:
         build: 
             context: .
             dockerfile: DOCKERFILE
-        image: openeo-r-udf-server:0.0.1
+        image: openeo-r-udf-server:0.0.4-2
         container_name: openeo-r-udf
         ports:
             - "8010:8010"
